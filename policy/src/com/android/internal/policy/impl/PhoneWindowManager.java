@@ -1330,7 +1330,7 @@ public class PhoneWindowManager implements WindowManagerPolicy {
             mVolBtnMusicControls = (Settings.System.getIntForUser(resolver,
                     Settings.System.VOLBTN_MUSIC_CONTROLS, 1, UserHandle.USER_CURRENT) == 1);
             int  mOnScreenButtonsHeight = (Settings.System.getInt(resolver,
-                    Settings.System.ON_SCREEN_BUTTONS_HEIGHT, 48 * DisplayMetrics.DENSITY_DEVICE/DisplayMetrics.DENSITY_DEFAULT)); //48dp dafault value.
+                    Settings.System.ON_SCREEN_BUTTONS_HEIGHT, 56 * DisplayMetrics.DENSITY_DEVICE/DisplayMetrics.DENSITY_DEFAULT)); //56dp dafault value.
 
             mNavigationBarHeightForRotation[mPortraitRotation] =
             mNavigationBarHeightForRotation[mUpsideDownRotation] = mOnScreenButtonsHeight * DisplayMetrics.DENSITY_DEVICE/DisplayMetrics.DENSITY_DEFAULT;
