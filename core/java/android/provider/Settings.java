@@ -3727,6 +3727,13 @@ public final class Settings {
         */
         public static final String NOTIF_ALPHA = "notif_alpha";
 
+        /**
+         * NFC polling mode configuration key
+         *
+         * @hide
+         */
+        public static final String NFC_POLLING_MODE = "nfc_polling_mode";
+
     }
 
     /**
