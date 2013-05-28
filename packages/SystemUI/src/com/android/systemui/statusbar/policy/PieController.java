@@ -62,9 +62,7 @@ import android.widget.ImageView;
 import android.widget.Toast;
 
 import com.android.internal.util.cm.DevUtils;
-import com.android.internal.util.pie.PieColorUtils;
 import com.android.internal.util.pie.PiePosition;
-import com.android.internal.util.pie.PieColorUtils.PieColorSettings;
 import com.android.systemui.R;
 import com.android.systemui.statusbar.BaseStatusBar;
 import com.android.systemui.statusbar.NavigationButtons;
@@ -203,8 +201,6 @@ public class PieController implements BaseStatusBar.NavigationBarCallback, PieVi
         void observe() {
             ContentResolver resolver = mContext.getContentResolver();
             // trigger setupNavigationItems()
-            resolver.registerContentObserver(Settings.System.getUriFor(
-                    Settings.System.PIE_COLORS), false, this);
             resolver.registerContentObserver(Settings.System.getUriFor(
                     Settings.System.NAV_BUTTONS), false, this);
             // trigger setupContainer()
@@ -360,7 +356,6 @@ public class PieController implements BaseStatusBar.NavigationBarCallback, PieVi
     private void setupNavigationItems() {
         int minimumImageSize = (int)mContext.getResources().getDimension(R.dimen.pie_item_size);
         ButtonInfo[] buttons = NavigationButtons.loadButtonMap(mContext);
-        PieColorSettings colorSettings = PieColorUtils.loadPieColors(mContext, mContext.getResources());
 
         mNavigationSlice.clear();
 
@@ -372,8 +367,8 @@ public class PieController implements BaseStatusBar.NavigationBarCallback, PieVi
                 if (bi == NavigationButtons.HOME) {
                     // search light has a width of 6 to take the complete space that normally
                     // BACK HOME RECENT would occupy
-                    mSearchLight = constructItem(6, SEARCHLIGHT, SEARCHLIGHT.portResource,
-                            minimumImageSize, false, colorSettings);
+                    mSearchLight = constructItem(6, SEARCHLIGHT,
+                            SEARCHLIGHT.portResource, minimumImageSize, false);
                     mNavigationSlice.addItem(mSearchLight);
                 }
 
@@ -382,7 +377,7 @@ public class PieController implements BaseStatusBar.NavigationBarCallback, PieVi
                 boolean isSmall = NavigationButtons.IS_SLOT_SMALL[i];
                 mNavigationSlice.addItem(constructItem(isSmall ? 1 : 2, bi,
                         isSmall ? bi.sideResource : bi.portResource, minimumImageSize,
-                        canLongPress, colorSettings));
+                        canLongPress));
             }
         }
         mMenuButton = findItem(NavigationButtons.CONDITIONAL_MENU);
@@ -392,14 +387,14 @@ public class PieController implements BaseStatusBar.NavigationBarCallback, PieVi
     }
 
     private PieItem constructItem(int width, ButtonInfo type, int image, int minimumImageSize,
-            boolean canLongPress, PieColorSettings colorSettings) {
+            boolean canLongPress) {
         ImageView view = new ImageView(mContext);
         view.setImageResource(image);
         view.setMinimumWidth(minimumImageSize);
         view.setMinimumHeight(minimumImageSize);
         LayoutParams lp = new LayoutParams(minimumImageSize, minimumImageSize);
         view.setLayoutParams(lp);
-        PieItem item = new PieItem(mContext, mPieContainer, 0, width, type, view, colorSettings);
+        PieItem item = new PieItem(mContext, mPieContainer, 0, width, type, view);
         item.setOnClickListener(this);
         if (canLongPress) {
             item.setOnLongClickListener(this);

@@ -28,9 +28,7 @@ import android.graphics.PorterDuff.Mode;
 import android.view.View;
 import android.widget.ImageView;
 
-import com.android.internal.util.pie.PieColorUtils;
 import com.android.internal.util.pie.PiePosition;
-import com.android.internal.util.pie.PieColorUtils.PieColorSettings;
 import com.android.systemui.R;
 import com.android.systemui.statusbar.pie.PieView.PieDrawable;
 
@@ -89,8 +87,7 @@ public class PieItem extends PieView.PieDrawable {
      */
     public final static int CAN_LONG_PRESS = 0x400;
 
-    public PieItem(Context context, PieView parent, int flags, int width, Object tag, View view,
-            PieColorSettings colorSettings) {
+    public PieItem(Context context, PieView parent, int flags, int width, Object tag, View view) {
         mView = view;
         mPieLayout = parent;
         this.tag = tag;
@@ -99,18 +96,18 @@ public class PieItem extends PieView.PieDrawable {
 
         final Resources res = context.getResources();
 
-        mBackgroundPaint.setColor(colorSettings.getColor(PieColorUtils.COLOR_NORMAL));
+        mBackgroundPaint.setColor(res.getColor(R.color.pie_background_color));
         mBackgroundPaint.setAntiAlias(true);
-        mSelectedPaint.setColor(colorSettings.getColor(PieColorUtils.COLOR_SELECTED));
+        mSelectedPaint.setColor(res.getColor(R.color.pie_selected_color));
         mSelectedPaint.setAntiAlias(true);
-        mLongPressPaint.setColor(colorSettings.getColor(PieColorUtils.COLOR_LONG_PRESSED));
+        mLongPressPaint.setColor(res.getColor(R.color.pie_long_pressed_color));
         mLongPressPaint.setAntiAlias(true);
-        mOutlinePaint.setColor(colorSettings.getColor(PieColorUtils.COLOR_OUTLINE));
+        mOutlinePaint.setColor(res.getColor(R.color.pie_outline_color));
         mOutlinePaint.setAntiAlias(true);
         mOutlinePaint.setStyle(Style.STROKE);
         mOutlinePaint.setStrokeWidth(res.getDimensionPixelSize(R.dimen.pie_outline));
 
-        setColor(colorSettings.getColor(PieColorUtils.COLOR_ICON));
+        setColor(res.getColor(R.color.pie_foreground_color));
     }
 
     public void setGap(float gap) {
