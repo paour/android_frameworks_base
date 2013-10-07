@@ -28,9 +28,7 @@ public class Traffic extends TextView {
     boolean trafficMeterEnable;
 
     boolean trafficMeterHide;
-
-    //Handler mHandler;
-
+    int trafficMeterSummaryTime;
     long totalRxBytes;
 
     long lastUpdateTime;
@@ -62,6 +60,8 @@ public class Traffic extends TextView {
                     .getUriFor(Settings.System.STATUS_BAR_TRAFFIC_HIDE), false, this);
             resolver.registerContentObserver(Settings.System
                     .getUriFor(Settings.System.STATUS_BAR_TRAFFIC_COLOR), false, this);
+            resolver.registerContentObserver(Settings.System
+                    .getUriFor(Settings.System.STATUS_BAR_TRAFFIC_SUMMARY), false, this);
 
             updateSettings();
         }
@@ -179,19 +179,25 @@ public class Traffic extends TextView {
 
     private String formatTraffic(long bytes, boolean speed) {
         if (bytes > 10485760) { // 1024 * 1024 * 10
-            return integerFormat.format(bytes / 1048576)
-                    + (speed ? "MB/s" : "MB");
+            return (speed ? "" : "(")
+                    + integerFormat.format(bytes / 1048576)
+                    + (speed ? "MB/s" : "MB)");
         } else if (bytes > 1048576) { // 1024 * 1024
-            return decimalFormat.format(((float) bytes) / 1048576f)
-                    + (speed ? "MB/s" : "MB");
+            return (speed ? "" : "(")
+                    + decimalFormat.format(((float) bytes) / 1048576f)
+                    + (speed ? "MB/s" : "MB)");
         } else if (bytes > 10240) { // 1024 * 10
-            return integerFormat.format(bytes / 1024)
-                    + (speed ? "KB/s" : "KB");
+            return (speed ? "" : "(")
+                    + integerFormat.format(bytes / 1024)
+                    + (speed ? "KB/s" : "KB)");
         } else if (bytes > 1024) { // 1024
-            return decimalFormat.format(((float) bytes) / 1024f)
-                    + (speed ? "KB/s" : "KB");
+            return (speed ? "" : "(")
+                    + decimalFormat.format(((float) bytes) / 1024f)
+                    + (speed ? "KB/s" : "KB)");
         } else {
-            return integerFormat.format(bytes) + (speed ? "B/s" : "B");
+            return (speed ? "" : "(")
+                    + integerFormat.format(bytes)
+                    + (speed ? "B/s" : "B)");
         }
     }
 
@@ -232,16 +238,14 @@ public class Traffic extends TextView {
             if (trafficMeterHide && newBytes == 0) {
                 long trafficBurstBytes = currentRxBytes - trafficBurstStartBytes;
 
-                if (trafficBurstBytes != 0) {
+                if (trafficBurstBytes != 0 && trafficMeterSummaryTime != 0) {
                     setText(formatTraffic(trafficBurstBytes, false));
 
                     Log.i(TAG,
                             "Traffic burst ended: " + trafficBurstBytes + "B in "
                                     + (SystemClock.elapsedRealtime() - trafficBurstStartTime)
                                     / 1000 + "s");
-
-                    keepOnUntil = SystemClock.elapsedRealtime() + 3000;
-
+                    keepOnUntil = SystemClock.elapsedRealtime() + trafficMeterSummaryTime;
                     trafficBurstStartTime = Long.MIN_VALUE;
                     trafficBurstStartBytes = currentRxBytes;
                 }
@@ -284,6 +288,8 @@ public class Traffic extends TextView {
                 Settings.System.STATUS_BAR_TRAFFIC_ENABLE, 0) == 1);
         trafficMeterHide = (Settings.System.getInt(resolver,
                 Settings.System.STATUS_BAR_TRAFFIC_HIDE, 1) == 1);
+        trafficMeterSummaryTime = Settings.System.getInt(resolver,
+                Settings.System.STATUS_BAR_TRAFFIC_SUMMARY, 3000);
         int defaultColor = Settings.System.getInt(resolver,
                 Settings.System.STATUS_BAR_TRAFFIC_COLOR, 0xFF33b5e5);
 
